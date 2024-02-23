@@ -108,6 +108,9 @@ def metamaskapprove(driver):
         }
     }
     """
+    time.sleep(1)
+    driver.execute_script(click_button_by_text % 'Confirm')
+    time.sleep(1)
     driver.execute_script(click_button_by_text % 'Next')
     time.sleep(1)
     driver.execute_script(click_button_by_text % 'Connect')
@@ -115,5 +118,18 @@ def metamaskapprove(driver):
     driver.execute_script(click_button_by_text % 'Approve')
     time.sleep(1)
     driver.execute_script(click_button_by_text % 'Switch network')
-
     driver.switch_to.window(driver.window_handles[1])
+
+#sending wallet phrase for login
+
+#with open('wallets.txt', 'r') as f:
+        #wallet = f.readlines()
+    
+#for i in range(1):
+    #metamaskloginwithkey(driver, wallet[i])
+
+
+# change window
+#driver.switch_to.window(driver.window_handles[1])
+
+    
