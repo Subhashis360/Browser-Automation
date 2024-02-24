@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 
 def createnewaccountsavekey(driver):
+    #create full
     WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.ID, "onboarding__terms-checkbox"))).click()
     WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[1]/div/div[2]/div/div/div/ul/li[2]/button"))).click()
     WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[1]/div/div[2]/div/div/div/div/button[1]"))).click()
@@ -20,6 +21,11 @@ def createnewaccountsavekey(driver):
     WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[1]/div/div[2]/div/div/div/div[2]/button"))).click()
     WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[2]/div/div/section/div[1]/div/button/span"))).click()
 
+    #copy wallet adress
+    WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[1]/div/div[3]/div/div/div/div[2]/div/div/div/div[1]/button[2]/div"))).click()
+    walletadress = WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[3]/div[3]/div/section/div[3]/div/div[2]/div/div/button/span[1]/div"))).text
+    WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[3]/div[3]/div/section/div[1]/div[2]/button/span"))).click()
+    #3dot click
     WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[1]/div/div[2]/div/div[2]/div/div/button/span"))).click()
     WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[1]/div/div[2]/div/div[2]/div[2]/button[6]/div/div"))).click()
     WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[1]/div/div[3]/div/div[2]/div[1]/div/button[4]/div/div[2]"))).click()
@@ -38,12 +44,13 @@ def createnewaccountsavekey(driver):
     holdbtn = WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[3]/div[3]/div/section/div[2]/button/span")))
     actions = ActionChains(driver)
     actions.click_and_hold(holdbtn).perform()
-
+    #save in wallet.txt
     actions.release(holdbtn).perform()
     walletkey = WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[1]/div/div[3]/div/div[2]/div/div/div/p"))).text
     with open('wallets.txt', 'a') as f:
-        f.write(f"{walletkey}\n")
-
+        f.write(f"{walletkey}||{walletadress}\n")
+        
+#create new account dont save key
 def createnewaccount(driver):
     WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.ID, "onboarding__terms-checkbox"))).click()
     WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[1]/div/div[2]/div/div/div/ul/li[2]/button"))).click()
@@ -77,7 +84,7 @@ def metamasklogin(driver):
     WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[1]/div/div[2]/div/div/div/div[2]/button"))).click()
     WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[1]/div/div[2]/div/div/div/div[2]/button"))).click()
     WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[2]/div/div/section/div[1]/div/button/span"))).click()
-
+#LOGIN METAMASK WITH KEY
 def metamaskloginwithkey(driver, key):
     key = key.split()
     WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.ID, "onboarding__terms-checkbox"))).click()
@@ -95,7 +102,7 @@ def metamaskloginwithkey(driver, key):
     WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[1]/div/div[2]/div/div/div/div[2]/button"))).click()
     WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[1]/div/div[2]/div/div/div/div[2]/button"))).click()
     WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[2]/div/div/section/div[1]/div/button/span"))).click()
-
+#approve metamask
 def metamaskapprove(driver):
     time.sleep(3)
     driver.switch_to.window(driver.window_handles[-1])
@@ -108,6 +115,7 @@ def metamaskapprove(driver):
         }
     }
     """
+    driver.execute_script(click_button_by_text % 'Sign')
     time.sleep(1)
     driver.execute_script(click_button_by_text % 'Confirm')
     time.sleep(1)
@@ -122,14 +130,24 @@ def metamaskapprove(driver):
 
 #sending wallet phrase for login
 
-#with open('wallets.txt', 'r') as f:
-        #wallet = f.readlines()
+wallet = []
+address = [] 
+
+with open('wallets.txt', 'r') as f:
+    for line in f:
+        key, adress = line.strip().split("||")
+        wallet.append(key)
+        address.append(adress)
     
-#for i in range(1):
-    #metamaskloginwithkey(driver, wallet[i])
+for i in range(1):
+    metamaskloginwithkey(driver, wallet[i])
+    metamaskloginwithkey(driver, address[i])
+
+#change window
+driver.switch_to.window(driver.window_handles[1])
+# open a link 
+driver.get('https://goerli.rio.network/')
+#maximum window size 
+driver.maximize_window()
 
 
-# change window
-#driver.switch_to.window(driver.window_handles[1])
-
-    
